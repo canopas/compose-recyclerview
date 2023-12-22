@@ -13,8 +13,10 @@ internal class ComposeRecyclerViewAdapter : RecyclerView.Adapter<ComposeRecycler
 
     var dataList: List<ComposeRecyclerViewItem> = emptyList()
         set(value) {
+            if (field == value) return
+            val index = this.dataList.indexOfFirst { it.hashCode() != field.hashCode() }
             field = value
-            notifyDataSetChanged()
+            notifyItemChanged(index)
         }
 
     class ComposeRecyclerViewHolder(val composeView: ComposeView) :
