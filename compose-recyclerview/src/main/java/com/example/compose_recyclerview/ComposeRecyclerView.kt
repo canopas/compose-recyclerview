@@ -33,7 +33,8 @@ fun ComposeRecyclerView(
     itemCount: Int,
     itemBuilder: @Composable (index: Int) -> Unit,
     onScrollEnd: () -> Unit = {},
-    orientation: LayoutOrientation = LayoutOrientation.Vertical
+    orientation: LayoutOrientation = LayoutOrientation.Vertical,
+    recyclerView: (RecyclerView) -> Unit? = {}
 ) {
     val context = LocalContext.current
     var scrollState by rememberSaveable { mutableStateOf(bundleOf()) }
@@ -56,8 +57,9 @@ fun ComposeRecyclerView(
         }
     }
 
-    val recyclerView = remember {
+    val composeRecyclerView = remember {
         RecyclerView(context).apply {
+            recyclerView.invoke(this)
             this.layoutManager = layoutManager
             addOnScrollListener(object : InfiniteScrollListener() {
                 override fun onScrollEnd() {
@@ -69,9 +71,8 @@ fun ComposeRecyclerView(
     }
 
     // Use AndroidView to embed the RecyclerView in the Compose UI
-
     AndroidView(
-        factory = { recyclerView },
+        factory = { composeRecyclerView },
         modifier = modifier,
         update = {
             adapter.totalItems = itemCount
