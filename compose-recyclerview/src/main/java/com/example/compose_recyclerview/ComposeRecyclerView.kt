@@ -34,7 +34,7 @@ fun ComposeRecyclerView(
     itemBuilder: @Composable (index: Int) -> Unit,
     onScrollEnd: () -> Unit = {},
     orientation: LayoutOrientation = LayoutOrientation.Vertical,
-    recyclerView: (RecyclerView) -> Unit? = {}
+    onCreate: (RecyclerView) -> Unit? = {}
 ) {
     val context = LocalContext.current
     var scrollState by rememberSaveable { mutableStateOf(bundleOf()) }
@@ -59,7 +59,7 @@ fun ComposeRecyclerView(
 
     val composeRecyclerView = remember {
         RecyclerView(context).apply {
-            recyclerView.invoke(this)
+            onCreate.invoke(this)
             this.layoutManager = layoutManager
             addOnScrollListener(object : InfiniteScrollListener() {
                 override fun onScrollEnd() {
