@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,11 +19,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.compose_recyclerview.ComposeRecyclerView
-import com.example.compose_recyclerview.data.ComposeRecyclerViewBuilder
 import com.example.composerecyclerview.model.UserData
 import com.example.composerecyclerview.ui.theme.ComposeRecyclerViewTheme
 
@@ -36,35 +37,65 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val userDataList = List(200) { index ->
-                        UserData("User $index", 20 + index, if (index % 2 == 0) "Male" else "Female")
+                        UserData(
+                            "User ${index + 1}",
+                            20 + index,
+                            if (index % 2 == 0) "Male" else "Female"
+                        )
                     }
 
-                    val items = ComposeRecyclerViewBuilder().apply {
-                        addCustomComposable {
-                            Text("Header Composable")
-                        }
-
-                        addDataItem(userDataList) { user ->
-                            CustomUserItem(user = user)
-                        }
-
-                        addCustomComposable {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text("Custom Composable in between lists")
-                        }
-
-                        addDataItem(userDataList) { user ->
-                            CustomUserItem(user = user)
-                        }
-
-                        addCustomComposable {
-                            Text("Footer Composable")
-                        }
-                    }.build()
+                    val otherUsersDataList = List(20) { index ->
+                        UserData(
+                            "User ${index + 21}",
+                            20 + index,
+                            if (index % 2 == 0) "Male" else "Female"
+                        )
+                    }
 
                     ComposeRecyclerView(
                         modifier = Modifier.fillMaxSize(),
-                        items = items
+                        itemCount = 1 + userDataList.size + 1 + otherUsersDataList.size,
+                        itemBuilder = { index ->
+                            if (index == 0) {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        "First List Header Composable",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier.padding(16.dp)
+                                    )
+                                }
+                                return@ComposeRecyclerView
+                            }
+
+                            val userIndex = index - 1
+                            if (userIndex < userDataList.size) {
+                                CustomUserItem(user = userDataList[userIndex])
+                                return@ComposeRecyclerView
+                            }
+
+                            if (userIndex == userDataList.size) {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        "Second List Header Composable",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier.padding(16.dp)
+                                    )
+                                }
+                                return@ComposeRecyclerView
+                            }
+
+                            val otherUserIndex = index - userDataList.size - 2
+                            if (otherUserIndex < otherUsersDataList.size) {
+                                CustomUserItem(user = otherUsersDataList[otherUserIndex])
+                                return@ComposeRecyclerView
+                            }
+                        }
                     )
                 }
             }
