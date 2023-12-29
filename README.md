@@ -4,8 +4,7 @@
 This library addresses performance concerns and resolves issues commonly faced in Compose LazyList implementations. 
 It comes with built-in support for drag-and-drop functionality, making it a versatile solution for dynamic UIs.
 
-![Blue Pink Gradient Fashion Banner](https://github.com/canopas/compose-recyclerview/assets/98312779/0c26cfda-7b40-4461-b8ca-a71fa376669b)
-
+![Blue Pink Gradient Fashion Banner (1)](https://github.com/canopas/compose-recyclerview/assets/98312779/f94d451f-f3f7-4920-91b4-c9417ee97be9)
 
 
 ## Benefits
