@@ -1,3 +1,4 @@
+
 # ComposeRecyclerView
 
 **ComposeRecyclerView** enables seamless integration of Jetpack Compose composables within traditional RecyclerView. 
@@ -39,6 +40,16 @@ ComposeRecyclerView(
     onScrollEnd = {
         // Callback triggered when the user reaches the end of the list during scrolling
         // Add your logic to handle the end of the list, such as loading more data
+    },
+    itemTouchHelperConfig = {
+        nonDraggableItemTypes = setOf(yourHeaderItemType)
+        onMove = { recyclerView, viewHolder, target ->
+            // Handle item move
+        }
+        onSwiped = { viewHolder, direction ->
+            // Handle item swipe
+        }
+        // Add more customization options as needed
     }
 )
 ```
@@ -81,8 +92,6 @@ recyclerView.layoutManager = GridLayoutManager(context, yourSpanCount)
 
 https://github.com/canopas/compose-recyclerview/assets/98312779/861bf272-61bd-4bac-aaa5-47415d290913
 
-
-
 ## Sample Implementation
 
 ```
@@ -100,7 +109,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    var userDataList = List(20) { index ->
+                    val userDataList = List(20) { index ->
                         UserData(
                             "User ${index + 1}",
                             20 + index,
@@ -108,7 +117,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    var otherUsersDataList = List(20) { index ->
+                    val otherUsersDataList = List(20) { index ->
                         UserData(
                             "User ${index + 21}",
                             20 + index,
@@ -170,11 +179,7 @@ class MainActivity : ComponentActivity() {
                                 ITEM_TYPE_FIRST_LIST_ITEM -> {
                                     val fromIndex = fromPosition - 1
                                     val toIndex = toPosition - 1
-                                    val list = ArrayList(userDataList)
-                                    val fromUser = userDataList[fromIndex]
-                                    list.removeAt(fromIndex)
-                                    list.add(toIndex, fromUser)
-                                    userDataList = list
+                                    Collections.swap(userDataList, fromIndex, toIndex)
                                 }
 
                                 ITEM_TYPE_SECOND_HEADER -> {
@@ -185,11 +190,7 @@ class MainActivity : ComponentActivity() {
                                 else -> {
                                     val fromIndex = fromPosition - userDataList.size - 2
                                     val toIndex = toPosition - userDataList.size - 2
-                                    val list = ArrayList(otherUsersDataList)
-                                    val fromUser = otherUsersDataList[fromIndex]
-                                    list.removeAt(fromIndex)
-                                    list.add(toIndex, fromUser)
-                                    otherUsersDataList = list
+                                    Collections.swap(otherUsersDataList, fromIndex, toIndex)
                                 }
                             }
                         },
@@ -208,7 +209,23 @@ class MainActivity : ComponentActivity() {
                                     else -> ITEM_TYPE_SECOND_LIST_ITEM // Second list item type
                                 }
                             }
-                        }
+                        },
+                        onScrollEnd = {
+                            // Do API call when the user reaches the end of the list during scrolling
+                            Log.d("MainActivity", "onScrollEnd")
+                        },
+                        itemTouchHelperConfig = {
+                            nonDraggableItemTypes =
+                                setOf(ITEM_TYPE_FIRST_HEADER, ITEM_TYPE_SECOND_HEADER)
+
+                            /*onMove = { recyclerView, viewHolder, target ->
+                                // Handle item move
+                            }
+                            onSwiped = { viewHolder, direction ->
+                                // Handle item swipe
+                            }
+                            // Add more customization options as needed*/
+                        },
                     ) { recyclerView ->
                         recyclerView.addItemDecoration(
                             DividerItemDecoration(
@@ -218,7 +235,7 @@ class MainActivity : ComponentActivity() {
                         )
 
                         // To change layout to grid layout
-                        /*val gridLayoutManager = GridLayoutManager(this, 2).apply {
+                        val gridLayoutManager = GridLayoutManager(this, 2).apply {
                             spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                                 override fun getSpanSize(position: Int): Int {
                                     return if (position == 0 || position == userDataList.size + 1) {
@@ -229,7 +246,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
-                        recyclerView.layoutManager = gridLayoutManager*/
+                        recyclerView.layoutManager = gridLayoutManager
                     }
                 }
             }
@@ -278,7 +295,23 @@ fun CustomUserItem(user: UserData) {
 }
 
 ```
-https://github.com/canopas/compose-recyclerview/assets/98312779/97b21e57-959c-419e-ae12-43c473089458
+<table>
+  <tr>
+    <td align="center">
+       <b>Linear Layout</b>
+       <br />
+       <br />
+      <img src="https://github.com/canopas/compose-recyclerview/assets/98312779/4e5e7cb0-4f2c-4fdb-ac0c-03a153ab962d"  width="80%" height="80%">
+    </td>
+    <td align="center">
+       <b>Grid Layout</b>
+       <br />
+       <br />
+      <img src="https://github.com/canopas/compose-recyclerview/assets/98312779/7d5cfe34-1652-4c06-8919-5cec4b594f24"  width="80%" height="80%">
+    </td>
+
+  </tr>  
+</table>
 
 
 ## Demo
