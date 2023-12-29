@@ -154,7 +154,20 @@ class MainActivity : ComponentActivity() {
                         onScrollEnd = {
                             // Do API call when the user reaches the end of the list during scrolling
                             Log.d("MainActivity", "onScrollEnd")
-                        }
+                        },
+                        itemTouchHelperConfig = {
+                            nonDraggableItemTypes =
+                                setOf(ITEM_TYPE_FIRST_HEADER, ITEM_TYPE_SECOND_HEADER)
+
+                            // Custom onMove
+                            /*onMove = { recyclerView, viewHolder, target ->
+                                (recyclerView.adapter as ComposeRecyclerViewAdapter).onItemMove(
+                                    viewHolder.bindingAdapterPosition,
+                                    target.bindingAdapterPosition
+                                )
+                                true
+                            }*/
+                        },
                     ) { recyclerView ->
                         recyclerView.addItemDecoration(
                             DividerItemDecoration(
