@@ -1,6 +1,7 @@
 package com.example.composerecyclerview
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
@@ -23,8 +24,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.compose_recyclerview.ComposeRecyclerView
+import com.example.compose_recyclerview.adapter.ComposeRecyclerViewAdapter
 import com.example.composerecyclerview.model.UserData
 import com.example.composerecyclerview.ui.theme.ComposeRecyclerViewTheme
+
+const val ITEM_TYPE_FIRST_HEADER = 0
+const val ITEM_TYPE_FIRST_LIST_ITEM = 1
+const val ITEM_TYPE_SECOND_HEADER = 2
+const val ITEM_TYPE_SECOND_LIST_ITEM = 3
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +42,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val userDataList = List(200) { index ->
+                    var userDataList = List(20) { index ->
                         UserData(
                             "User ${index + 1}",
                             20 + index,
@@ -43,7 +50,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    val otherUsersDataList = List(20) { index ->
+                    var otherUsersDataList = List(20) { index ->
                         UserData(
                             "User ${index + 21}",
                             20 + index,
@@ -94,6 +101,59 @@ class MainActivity : ComponentActivity() {
                                 CustomUserItem(user = otherUsersDataList[otherUserIndex])
                                 return@ComposeRecyclerView
                             }
+                        },
+                        onItemMove = { fromPosition, toPosition, itemType ->
+                            // Update list when an item is moved
+                            when (itemType) {
+                                ITEM_TYPE_FIRST_HEADER -> {
+                                    // Do nothing
+                                }
+
+                                ITEM_TYPE_FIRST_LIST_ITEM -> {
+                                    val fromIndex = fromPosition - 1
+                                    val toIndex = toPosition - 1
+                                    val list = ArrayList(userDataList)
+                                    val fromUser = userDataList[fromIndex]
+                                    list.removeAt(fromIndex)
+                                    list.add(toIndex, fromUser)
+                                    userDataList = list
+                                }
+
+                                ITEM_TYPE_SECOND_HEADER -> {
+                                    // Do nothing
+                                }
+
+                                // ITEM_TYPE_SECOND_LIST_ITEM
+                                else -> {
+                                    val fromIndex = fromPosition - userDataList.size - 2
+                                    val toIndex = toPosition - userDataList.size - 2
+                                    val list = ArrayList(otherUsersDataList)
+                                    val fromUser = otherUsersDataList[fromIndex]
+                                    list.removeAt(fromIndex)
+                                    list.add(toIndex, fromUser)
+                                    otherUsersDataList = list
+                                }
+                            }
+                        },
+                        onDragCompleted = {
+                            // Update list or do API call when an item drag operation is completed
+                            Log.d("MainActivity", "onDragCompleted: $it")
+                        },
+                        itemTypeBuilder = object : ComposeRecyclerViewAdapter.ItemTypeBuilder {
+                            override fun getItemType(position: Int): Int {
+                                // Determine the item type based on the position
+                                // You can customize this logic based on your requirements
+                                return when {
+                                    position == 0 -> ITEM_TYPE_FIRST_HEADER // Header type
+                                    position <= userDataList.size -> ITEM_TYPE_FIRST_LIST_ITEM // First list item type
+                                    position == userDataList.size + 1 -> ITEM_TYPE_SECOND_HEADER // Header type
+                                    else -> ITEM_TYPE_SECOND_LIST_ITEM // Second list item type
+                                }
+                            }
+                        },
+                        onScrollEnd = {
+                            // Do API call when the user reaches the end of the list during scrolling
+                            Log.d("MainActivity", "onScrollEnd")
                         }
                     ) { recyclerView ->
                         recyclerView.addItemDecoration(
@@ -102,6 +162,20 @@ class MainActivity : ComponentActivity() {
                                 DividerItemDecoration.VERTICAL
                             )
                         )
+
+                        // To change layout to grid layout, uncomment the following lines
+                        /*val gridLayoutManager = GridLayoutManager(this, 2).apply {
+                            spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                                override fun getSpanSize(position: Int): Int {
+                                    return if (position == 0 || position == userDataList.size + 1) {
+                                        2 // To show header title at the center of the screen and span across the entire screen
+                                    } else {
+                                        1
+                                    }
+                                }
+                            }
+                        }
+                        recyclerView.layoutManager = gridLayoutManager*/
                     }
                 }
             }

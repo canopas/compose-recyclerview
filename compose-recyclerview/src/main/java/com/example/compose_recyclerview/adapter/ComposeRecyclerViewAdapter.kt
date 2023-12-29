@@ -11,8 +11,12 @@ import com.example.compose_recyclerview.data.LayoutOrientation
 /**
  * RecyclerView adapter for handling dynamically generated Compose items.
  */
-internal class ComposeRecyclerViewAdapter :
-    RecyclerView.Adapter<ComposeRecyclerViewAdapter.ComposeRecyclerViewHolder>() {
+class ComposeRecyclerViewAdapter :
+    RecyclerView.Adapter<ComposeRecyclerViewAdapter.ComposeRecyclerViewHolder>(){
+
+    interface ItemTypeBuilder {
+        fun getItemType(position: Int): Int
+    }
 
     var totalItems: Int = 0
         set(value) {
@@ -25,7 +29,10 @@ internal class ComposeRecyclerViewAdapter :
             }
         }
 
-    var itemBuilder: (@Composable (index: Int) -> Unit)? = null
+    var itemBuilder: (@Composable (index: Int) -> Unit)? =
+        null
+
+    var itemTypeBuilder: ItemTypeBuilder? = null
 
     var layoutOrientation: LayoutOrientation = LayoutOrientation.Vertical
         set(value) {
@@ -33,6 +40,7 @@ internal class ComposeRecyclerViewAdapter :
             field = value
             notifyItemChanged(0)
         }
+
 
     inner class ComposeRecyclerViewHolder(val composeView: ComposeView) :
         RecyclerView.ViewHolder(composeView)
@@ -44,17 +52,20 @@ internal class ComposeRecyclerViewAdapter :
     }
 
     override fun onBindViewHolder(holder: ComposeRecyclerViewHolder, position: Int) {
-        holder.composeView.setContent {
-            when (layoutOrientation) {
-                LayoutOrientation.Horizontal -> {
-                    Row {
-                        itemBuilder?.invoke(position)
+        holder.composeView.apply {
+            tag = holder
+            setContent {
+                when (layoutOrientation) {
+                    LayoutOrientation.Horizontal -> {
+                        Row {
+                            itemBuilder?.invoke(position)
+                        }
                     }
-                }
 
-                LayoutOrientation.Vertical -> {
-                    Column {
-                        itemBuilder?.invoke(position)
+                    LayoutOrientation.Vertical -> {
+                        Column {
+                            itemBuilder?.invoke(position)
+                        }
                     }
                 }
             }
@@ -64,6 +75,24 @@ internal class ComposeRecyclerViewAdapter :
     override fun getItemCount(): Int = totalItems
 
     override fun getItemViewType(position: Int): Int {
-        return position
+        return itemTypeBuilder?.getItemType(position) ?: 0
+    }
+
+    fun onItemMove(fromPosition: Int, toPosition: Int) {
+        notifyItemMoved(fromPosition, toPosition)
+    }
+
+    fun update(
+        itemCount: Int,
+        itemBuilder: @Composable (index: Int) -> Unit,
+        layoutOrientation: LayoutOrientation,
+        itemTypeBuilder: ItemTypeBuilder?
+    ) {
+        this.totalItems = itemCount
+        this.itemBuilder = itemBuilder
+        this.layoutOrientation = layoutOrientation
+        itemTypeBuilder?.let {
+            this.itemTypeBuilder = it
+        }
     }
 }
