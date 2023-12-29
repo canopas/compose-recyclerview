@@ -108,16 +108,17 @@ fun ComposeRecyclerView(
                 }
 
                 config.onMove?.invoke(recyclerView, viewHolder, target)
-                    ?: (recyclerView.adapter as ComposeRecyclerViewAdapter).onItemMove(
-                        viewHolder.bindingAdapterPosition,
-                        target.bindingAdapterPosition
-                    )
-
-                onItemMove.invoke(
-                    viewHolder.bindingAdapterPosition,
-                    target.bindingAdapterPosition,
-                    fromType
-                )
+                    ?: kotlin.run {
+                        onItemMove.invoke(
+                            viewHolder.bindingAdapterPosition,
+                            target.bindingAdapterPosition,
+                            fromType
+                        )
+                        (recyclerView.adapter as ComposeRecyclerViewAdapter).onItemMove(
+                            viewHolder.bindingAdapterPosition,
+                            target.bindingAdapterPosition
+                        )
+                    }
                 return true
             }
 
@@ -130,7 +131,7 @@ fun ComposeRecyclerView(
                 viewHolder: RecyclerView.ViewHolder
             ): Int {
 
-                return config.getMovementFlags?.invoke(recyclerView, viewHolder) ?: run {
+                return config.getMovementFlags?.invoke(recyclerView, viewHolder) ?: kotlin.run {
                     val type = adapter.getItemViewType(viewHolder.bindingAdapterPosition)
                     if (type in config.nonDraggableItemTypes) {
                         0
@@ -144,14 +145,14 @@ fun ComposeRecyclerView(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder
             ) {
-                config.clearView?.invoke(recyclerView, viewHolder) ?: run {
+                config.clearView?.invoke(recyclerView, viewHolder) ?: kotlin.run {
                     viewHolder.itemView.alpha = 1f
                     onDragCompleted.invoke(viewHolder.bindingAdapterPosition)
                 }
             }
 
             override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
-                config.onSelectedChanged?.invoke(viewHolder, actionState) ?: run {
+                config.onSelectedChanged?.invoke(viewHolder, actionState) ?: kotlin.run {
                     super.onSelectedChanged(viewHolder, actionState)
                     if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
                         viewHolder?.itemView?.alpha = 0.5f

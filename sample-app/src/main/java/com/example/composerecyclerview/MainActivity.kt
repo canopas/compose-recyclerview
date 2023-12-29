@@ -23,10 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.GridLayoutManager
 import com.example.compose_recyclerview.ComposeRecyclerView
 import com.example.compose_recyclerview.adapter.ComposeRecyclerViewAdapter
 import com.example.composerecyclerview.model.UserData
 import com.example.composerecyclerview.ui.theme.ComposeRecyclerViewTheme
+import java.util.Collections
 
 const val ITEM_TYPE_FIRST_HEADER = 0
 const val ITEM_TYPE_FIRST_LIST_ITEM = 1
@@ -42,7 +44,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    var userDataList = List(20) { index ->
+                    val userDataList = List(20) { index ->
                         UserData(
                             "User ${index + 1}",
                             20 + index,
@@ -50,7 +52,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    var otherUsersDataList = List(20) { index ->
+                    val otherUsersDataList = List(20) { index ->
                         UserData(
                             "User ${index + 21}",
                             20 + index,
@@ -112,11 +114,7 @@ class MainActivity : ComponentActivity() {
                                 ITEM_TYPE_FIRST_LIST_ITEM -> {
                                     val fromIndex = fromPosition - 1
                                     val toIndex = toPosition - 1
-                                    val list = ArrayList(userDataList)
-                                    val fromUser = userDataList[fromIndex]
-                                    list.removeAt(fromIndex)
-                                    list.add(toIndex, fromUser)
-                                    userDataList = list
+                                    Collections.swap(userDataList, fromIndex, toIndex)
                                 }
 
                                 ITEM_TYPE_SECOND_HEADER -> {
@@ -127,11 +125,7 @@ class MainActivity : ComponentActivity() {
                                 else -> {
                                     val fromIndex = fromPosition - userDataList.size - 2
                                     val toIndex = toPosition - userDataList.size - 2
-                                    val list = ArrayList(otherUsersDataList)
-                                    val fromUser = otherUsersDataList[fromIndex]
-                                    list.removeAt(fromIndex)
-                                    list.add(toIndex, fromUser)
-                                    otherUsersDataList = list
+                                    Collections.swap(otherUsersDataList, fromIndex, toIndex)
                                 }
                             }
                         },
@@ -159,14 +153,13 @@ class MainActivity : ComponentActivity() {
                             nonDraggableItemTypes =
                                 setOf(ITEM_TYPE_FIRST_HEADER, ITEM_TYPE_SECOND_HEADER)
 
-                            // Custom onMove
                             /*onMove = { recyclerView, viewHolder, target ->
-                                (recyclerView.adapter as ComposeRecyclerViewAdapter).onItemMove(
-                                    viewHolder.bindingAdapterPosition,
-                                    target.bindingAdapterPosition
-                                )
-                                true
-                            }*/
+                                // Handle item move
+                            }
+                            onSwiped = { viewHolder, direction ->
+                                // Handle item swipe
+                            }
+                            // Add more customization options as needed*/
                         },
                     ) { recyclerView ->
                         recyclerView.addItemDecoration(
@@ -177,7 +170,7 @@ class MainActivity : ComponentActivity() {
                         )
 
                         // To change layout to grid layout, uncomment the following lines
-                        /*val gridLayoutManager = GridLayoutManager(this, 2).apply {
+                        val gridLayoutManager = GridLayoutManager(this, 2).apply {
                             spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                                 override fun getSpanSize(position: Int): Int {
                                     return if (position == 0 || position == userDataList.size + 1) {
@@ -188,7 +181,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
-                        recyclerView.layoutManager = gridLayoutManager*/
+                        recyclerView.layoutManager = gridLayoutManager
                     }
                 }
             }
