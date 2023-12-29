@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.compose_recyclerview.adapter.ComposeRecyclerViewAdapter
 import com.example.compose_recyclerview.data.LayoutOrientation
 import com.example.compose_recyclerview.utils.InfiniteScrollListener
+import com.example.compose_recyclerview.utils.ItemTouchHelperConfig
 
 /**
  * Composable function to display a RecyclerView with dynamically generated Compose items.
@@ -34,6 +35,8 @@ import com.example.compose_recyclerview.utils.InfiniteScrollListener
  *  * Required for effective drag and drop. Provide a non-null [ComposeRecyclerViewAdapter.ItemTypeBuilder] when enabling drag and drop functionality.
  *  * Useful when dealing with multiple item types, ensuring proper handling and layout customization for each type.
  * @param onDragCompleted Callback triggered when an item drag operation is completed.
+ * @param itemTouchHelperConfig Configuration block for customizing the behavior of ItemTouchHelper.
+ *  * Specify non-draggable item types, handle drag-and-drop and swipe actions, customize the appearance during drag, and more.
  * @param onItemMove Callback triggered when an item is moved within the RecyclerView.
  * @param onCreate Callback to customize the RecyclerView after its creation.
  */
@@ -46,6 +49,7 @@ fun ComposeRecyclerView(
     orientation: LayoutOrientation = LayoutOrientation.Vertical,
     itemTypeBuilder: ComposeRecyclerViewAdapter.ItemTypeBuilder? = null,
     onDragCompleted: (position: Int) -> Unit = { _ -> },
+    itemTouchHelperConfig: (ItemTouchHelperConfig.() -> Unit)? = null,
     onItemMove: (fromPosition: Int, toPosition: Int, itemType: Int) -> Unit = { _, _, _ -> },
     onCreate: (RecyclerView) -> Unit = {}
 ) {
@@ -85,6 +89,10 @@ fun ComposeRecyclerView(
         }
     }
 
+    val config = remember {
+        ItemTouchHelperConfig().apply { itemTouchHelperConfig?.invoke(this) }
+    }
+
     val itemTouchHelper = remember {
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(UP or DOWN or START or END, 0) {
             override fun onMove(
@@ -95,38 +103,65 @@ fun ComposeRecyclerView(
                 val fromType = adapter.getItemViewType(viewHolder.bindingAdapterPosition)
                 val toType = adapter.getItemViewType(target.bindingAdapterPosition)
 
-                if (fromType != toType) {
+                if (fromType != toType || fromType in config.nonDraggableItemTypes) {
                     return false
                 }
 
-                adapter.onItemMove(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
-                onItemMove.invoke(
-                    viewHolder.bindingAdapterPosition,
-                    target.bindingAdapterPosition,
-                    fromType
-                )
+                config.onMove?.invoke(recyclerView, viewHolder, target)
+                    ?: kotlin.run {
+                        onItemMove.invoke(
+                            viewHolder.bindingAdapterPosition,
+                            target.bindingAdapterPosition,
+                            fromType
+                        )
+                        (recyclerView.adapter as ComposeRecyclerViewAdapter).onItemMove(
+                            viewHolder.bindingAdapterPosition,
+                            target.bindingAdapterPosition
+                        )
+                    }
                 return true
             }
 
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {  }
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                config.onSwiped?.invoke(viewHolder, direction)
+            }
+
+            override fun getMovementFlags(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
+
+                return config.getMovementFlags?.invoke(recyclerView, viewHolder) ?: kotlin.run {
+                    val type = adapter.getItemViewType(viewHolder.bindingAdapterPosition)
+                    if (type in config.nonDraggableItemTypes) {
+                        0
+                    } else {
+                        super.getMovementFlags(recyclerView, viewHolder)
+                    }
+                }
+            }
 
             override fun clearView(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder
             ) {
-                viewHolder.itemView.alpha = 1f
-                onDragCompleted.invoke(viewHolder.bindingAdapterPosition)
+                config.clearView?.invoke(recyclerView, viewHolder) ?: kotlin.run {
+                    viewHolder.itemView.alpha = 1f
+                    onDragCompleted.invoke(viewHolder.bindingAdapterPosition)
+                }
             }
 
             override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
-                super.onSelectedChanged(viewHolder, actionState)
-                if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
-                    viewHolder?.itemView?.alpha = 0.5f
+                config.onSelectedChanged?.invoke(viewHolder, actionState) ?: kotlin.run {
+                    super.onSelectedChanged(viewHolder, actionState)
+                    if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+                        viewHolder?.itemView?.alpha = 0.5f
+                    }
                 }
             }
 
             override fun isLongPressDragEnabled(): Boolean {
-                return true
+                return config.isLongPressDragEnabled
             }
         })
     }
