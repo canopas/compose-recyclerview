@@ -23,16 +23,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.ItemTouchHelper.DOWN
-import androidx.recyclerview.widget.ItemTouchHelper.END
-import androidx.recyclerview.widget.ItemTouchHelper.START
-import androidx.recyclerview.widget.ItemTouchHelper.UP
 import com.example.compose_recyclerview.ComposeRecyclerView
 import com.example.compose_recyclerview.adapter.ComposeRecyclerViewAdapter
 import com.example.composerecyclerview.model.UserData
 import com.example.composerecyclerview.ui.theme.ComposeRecyclerViewTheme
+
+const val ITEM_TYPE_FIRST_HEADER = 0
+const val ITEM_TYPE_FIRST_LIST_ITEM = 1
+const val ITEM_TYPE_SECOND_HEADER = 2
+const val ITEM_TYPE_SECOND_LIST_ITEM = 3
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,53 +62,54 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         itemCount = 1 + userDataList.size + 1 + otherUsersDataList.size,
                         itemBuilder = { index ->
-                                if (index == 0) {
-                                    Box(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            "First List Header Composable",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            modifier = Modifier.padding(16.dp)
-                                        )
-                                    }
-                                    return@ComposeRecyclerView
+                            if (index == 0) {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        "First List Header Composable",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier.padding(16.dp)
+                                    )
                                 }
+                                return@ComposeRecyclerView
+                            }
 
-                                val userIndex = index - 1
-                                if (userIndex < userDataList.size) {
-                                    CustomUserItem(user = userDataList[userIndex])
-                                    return@ComposeRecyclerView
-                                }
+                            val userIndex = index - 1
+                            if (userIndex < userDataList.size) {
+                                CustomUserItem(user = userDataList[userIndex])
+                                return@ComposeRecyclerView
+                            }
 
-                                if (userIndex == userDataList.size) {
-                                    Box(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            "Second List Header Composable",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            modifier = Modifier.padding(16.dp)
-                                        )
-                                    }
-                                    return@ComposeRecyclerView
+                            if (userIndex == userDataList.size) {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        "Second List Header Composable",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier.padding(16.dp)
+                                    )
                                 }
+                                return@ComposeRecyclerView
+                            }
 
-                                val otherUserIndex = index - userDataList.size - 2
-                                if (otherUserIndex < otherUsersDataList.size) {
-                                    CustomUserItem(user = otherUsersDataList[otherUserIndex])
-                                    return@ComposeRecyclerView
-                                }
+                            val otherUserIndex = index - userDataList.size - 2
+                            if (otherUserIndex < otherUsersDataList.size) {
+                                CustomUserItem(user = otherUsersDataList[otherUserIndex])
+                                return@ComposeRecyclerView
+                            }
                         },
                         onItemMove = { fromPosition, toPosition, itemType ->
                             // Update list when an item is moved
-                            when(itemType) {
-                                0 -> {
+                            when (itemType) {
+                                ITEM_TYPE_FIRST_HEADER -> {
                                     // Do nothing
                                 }
-                                1 -> {
+
+                                ITEM_TYPE_FIRST_LIST_ITEM -> {
                                     val fromIndex = fromPosition - 1
                                     val toIndex = toPosition - 1
                                     val list = ArrayList(userDataList)
@@ -118,9 +118,12 @@ class MainActivity : ComponentActivity() {
                                     list.add(toIndex, fromUser)
                                     userDataList = list
                                 }
-                                2 -> {
+
+                                ITEM_TYPE_SECOND_HEADER -> {
                                     // Do nothing
                                 }
+
+                                // ITEM_TYPE_SECOND_LIST_ITEM
                                 else -> {
                                     val fromIndex = fromPosition - userDataList.size - 2
                                     val toIndex = toPosition - userDataList.size - 2
@@ -133,19 +136,24 @@ class MainActivity : ComponentActivity() {
                             }
                         },
                         onDragCompleted = {
-                            Log.e("XXX", "List:${userDataList.map { it.name }}")
+                            // Update list or do API call when an item drag operation is completed
+                            Log.d("MainActivity", "onDragCompleted: $it")
                         },
                         itemTypeBuilder = object : ComposeRecyclerViewAdapter.ItemTypeBuilder {
                             override fun getItemType(position: Int): Int {
                                 // Determine the item type based on the position
                                 // You can customize this logic based on your requirements
                                 return when {
-                                    position == 0 -> 0 // Header type
-                                    position <= userDataList.size -> 1 // First list item type
-                                    position == userDataList.size + 1 -> 2 // Header type
-                                    else -> 3 // Second list item type
+                                    position == 0 -> ITEM_TYPE_FIRST_HEADER // Header type
+                                    position <= userDataList.size -> ITEM_TYPE_FIRST_LIST_ITEM // First list item type
+                                    position == userDataList.size + 1 -> ITEM_TYPE_SECOND_HEADER // Header type
+                                    else -> ITEM_TYPE_SECOND_LIST_ITEM // Second list item type
                                 }
                             }
+                        },
+                        onScrollEnd = {
+                            // Do API call when the user reaches the end of the list during scrolling
+                            Log.d("MainActivity", "onScrollEnd")
                         }
                     ) { recyclerView ->
                         recyclerView.addItemDecoration(

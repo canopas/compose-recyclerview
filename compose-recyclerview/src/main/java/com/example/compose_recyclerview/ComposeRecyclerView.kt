@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.compose_recyclerview.adapter.ComposeRecyclerViewAdapter
 import com.example.compose_recyclerview.data.LayoutOrientation
+import com.example.compose_recyclerview.utils.InfiniteScrollListener
 
 /**
  * Composable function to display a RecyclerView with dynamically generated Compose items.
@@ -31,6 +32,7 @@ import com.example.compose_recyclerview.data.LayoutOrientation
  * @param orientation The layout direction of the RecyclerView.
  * @param itemTypeBuilder The optional lambda function to determine the type of each item.
  *  * Required for effective drag and drop. Provide a non-null [ComposeRecyclerViewAdapter.ItemTypeBuilder] when enabling drag and drop functionality.
+ *  * Useful when dealing with multiple item types, ensuring proper handling and layout customization for each type.
  * @param onDragCompleted Callback triggered when an item drag operation is completed.
  * @param onItemMove Callback triggered when an item is moved within the RecyclerView.
  * @param onCreate Callback to customize the RecyclerView after its creation.
@@ -150,29 +152,4 @@ fun ComposeRecyclerView(
             scrollState = bundleOf("RecyclerviewState" to layoutManager.onSaveInstanceState())
         }
     })
-}
-
-/**
- * Abstract class for handling infinite scrolling events in a RecyclerView.
- */
-abstract class InfiniteScrollListener : RecyclerView.OnScrollListener() {
-    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-        super.onScrolled(recyclerView, dx, dy)
-        if (dy > 0 || dx > 0) {
-            val layoutManager = recyclerView.layoutManager
-            if (layoutManager is LinearLayoutManager) {
-                val visibleItemCount = layoutManager.childCount
-                val totalItemCount = layoutManager.itemCount
-                val pastVisibleItems = layoutManager.findFirstVisibleItemPosition()
-                if (visibleItemCount + pastVisibleItems >= totalItemCount) {
-                    onScrollEnd()
-                }
-            }
-        }
-    }
-
-    /**
-     * Callback triggered when the user reaches the end of the list during scrolling.
-     */
-    protected abstract fun onScrollEnd()
 }
