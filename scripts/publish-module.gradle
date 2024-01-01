@@ -1,0 +1,62 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+group = PUBLISH_GROUP_ID
+version = rootProject.ext["publish_version"]
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                // The coordinates of the library, being set from variables that
+                // we'll set up later
+                groupId PUBLISH_GROUP_ID
+                artifactId PUBLISH_ARTIFACT_ID
+                version rootProject.ext["publish_version"]
+
+                /// Two artifacts, the `aar` (or `jar`) and the sources
+                if (project.plugins.findPlugin("com.android.library")) {
+                    from components.release
+                } else {
+                    artifact("$buildDir/libs/${project.getName()}-${version}.jar")
+                }
+
+                // Mostly self-explanatory metadata
+                pom {
+                    name = PUBLISH_ARTIFACT_ID
+                    description = 'Integrating Jetpack Compose composables within traditional RecyclerView'
+                    url = 'https://github.com/canopas/compose-recyclerview'
+                    licenses {
+                        license {
+                            name = 'License'
+                            url = 'https://github.com/canopas/compose-recyclerview/blob/master/LICENSE.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'cp-megh-l'
+                            name = 'Megh Canopas'
+                            email = 'megh.l@canopas.com'
+                        }
+                        // Add all other devs here...
+                    }
+
+                    scm {
+                        connection = 'scm:git:github.com/canopas/compose-recyclerview.git'
+                        developerConnection = 'scm:git:ssh://github.com/canopas/compose-recyclerview.git'
+                        url = 'https://github.com/canopas/ComposeRecyclerView'
+                    }
+                }
+            }
+        }
+    }
+}
+signing {
+    useInMemoryPgpKeys(
+            rootProject.ext["signing.keyId"],
+            rootProject.ext["signing.key"],
+            rootProject.ext["signing.password"],
+    )
+
+    sign publishing.publications
+}
