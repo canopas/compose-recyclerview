@@ -18,7 +18,7 @@ jobs:
           java-version: 17
 
       - name: Publish to MavenCentral
-        run: ./gradlew compose_recyclerview:publishReleasePublicationToSonatypeRepository --max-workers 1 closeAndReleaseSonatypeStagingRepository
+        run: ./gradlew compose-recyclerview:publishReleasePublicationToSonatypeRepository --max-workers 1 closeAndReleaseSonatypeStagingRepository
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
