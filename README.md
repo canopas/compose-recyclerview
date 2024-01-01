@@ -19,6 +19,15 @@ It comes with built-in support for drag-and-drop functionality, making it a vers
 - **Multi-Item Type Support:** Easily handle multiple item types within the same RecyclerView, enhancing the versatility of your UI.
 
 
+## How to add in your project
+
+Add the dependency
+
+```gradle
+ implementation 'com.canopas:compose_recyclerview:1.0.0'
+```
+
+
 ## Sample Usage
 
 Integrating **ComposeRecyclerView** into your Android app is a breeze! Follow these simple
