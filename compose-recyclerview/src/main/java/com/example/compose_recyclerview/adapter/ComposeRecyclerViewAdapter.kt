@@ -1,8 +1,6 @@
 package com.example.compose_recyclerview.adapter
 
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.recyclerview.widget.RecyclerView
@@ -41,7 +39,6 @@ class ComposeRecyclerViewAdapter :
             notifyItemChanged(0)
         }
 
-
     inner class ComposeRecyclerViewHolder(val composeView: ComposeView) :
         RecyclerView.ViewHolder(composeView)
 
@@ -55,19 +52,7 @@ class ComposeRecyclerViewAdapter :
         holder.composeView.apply {
             tag = holder
             setContent {
-                when (layoutOrientation) {
-                    LayoutOrientation.Horizontal -> {
-                        Row {
-                            itemBuilder?.invoke(position)
-                        }
-                    }
-
-                    LayoutOrientation.Vertical -> {
-                        Column {
-                            itemBuilder?.invoke(position)
-                        }
-                    }
-                }
+                itemBuilder?.invoke(position)
             }
         }
     }
