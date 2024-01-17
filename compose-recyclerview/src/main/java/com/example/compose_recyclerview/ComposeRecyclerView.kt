@@ -14,6 +14,8 @@ import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.DOWN
 import androidx.recyclerview.widget.ItemTouchHelper.END
+import androidx.recyclerview.widget.ItemTouchHelper.LEFT
+import androidx.recyclerview.widget.ItemTouchHelper.RIGHT
 import androidx.recyclerview.widget.ItemTouchHelper.START
 import androidx.recyclerview.widget.ItemTouchHelper.UP
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -95,7 +97,9 @@ fun ComposeRecyclerView(
     }
 
     val itemTouchHelper = remember {
-        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(UP or DOWN or START or END, 0) {
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            config.dragDirs ?: (UP or DOWN or START or END), config.swipeDirs ?: (LEFT or RIGHT)
+        ) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,

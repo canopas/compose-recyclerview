@@ -64,4 +64,14 @@ class ItemTouchHelperConfig {
      * Flag to enable or disable long press drag behavior.
      */
     var isLongPressDragEnabled: Boolean = true
+
+    /**
+     * Swipe directions for items. If not provided, all directions are enabled by default.
+     */
+    var swipeDirs: Int? = null
+
+    /**
+     * Drag directions for items. If not provided, left or right directions are enabled by default.
+     */
+    var dragDirs: Int? = null
 }
