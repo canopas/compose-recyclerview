@@ -24,7 +24,7 @@ It comes with built-in support for drag-and-drop functionality, making it a vers
 Add the dependency
 
 ```gradle
- implementation 'com.canopas:compose_recyclerview:1.0.1'
+ implementation 'com.canopas:compose_recyclerview:1.0.2'
 ```
 
 
@@ -58,6 +58,8 @@ ComposeRecyclerView(
         onSwiped = { viewHolder, direction ->
             // Handle item swipe
         }
+        dragDirs = UP or DOWN or START or END // Specify drag directions here
+        swipeDirs = LEFT or RIGHT // Specify swipe directions here
         // Add more customization options as needed
     }
 )
