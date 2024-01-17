@@ -80,6 +80,7 @@ fun ComposeRecyclerView(
     val composeRecyclerView = remember {
         RecyclerView(context).apply {
             this.layoutManager = layoutManager
+            this.clipToOutline = true
             addOnScrollListener(object : InfiniteScrollListener() {
                 override fun onScrollEnd() {
                     onScrollEnd()
