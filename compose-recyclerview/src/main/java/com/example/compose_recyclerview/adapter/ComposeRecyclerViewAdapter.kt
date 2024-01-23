@@ -16,15 +16,13 @@ class ComposeRecyclerViewAdapter :
         fun getItemType(position: Int): Int
     }
 
+    private var itemList: MutableList<Any> = mutableListOf()
+
     var totalItems: Int = 0
         set(value) {
             if (field == value) return
             field = value
-            if (field == -1) {
-                notifyItemInserted(0)
-            } else {
-                notifyItemChanged(0)
-            }
+            notifyItemRangeChange(value)
         }
 
     var itemBuilder: (@Composable (index: Int) -> Unit)? =
@@ -78,6 +76,18 @@ class ComposeRecyclerViewAdapter :
         this.layoutOrientation = layoutOrientation
         itemTypeBuilder?.let {
             this.itemTypeBuilder = it
+        }
+    }
+
+    private fun notifyItemRangeChange(newSize: Int) {
+        val oldSize = itemList.size
+        if (newSize < oldSize) {
+            itemList = itemList.subList(0, newSize)
+            notifyItemRangeRemoved(newSize, oldSize - newSize)
+        } else if (newSize > oldSize) {
+            val list = MutableList(newSize - oldSize) { Any() }
+            itemList = (itemList + list).toMutableList()
+            notifyItemRangeInserted(oldSize, newSize - oldSize)
         }
     }
 }
