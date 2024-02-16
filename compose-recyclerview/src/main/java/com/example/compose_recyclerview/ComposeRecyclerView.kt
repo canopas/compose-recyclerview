@@ -43,10 +43,10 @@ import com.example.compose_recyclerview.utils.ItemTouchHelperConfig
  * @param onCreate Callback to customize the RecyclerView after its creation.
  */
 @Composable
-fun ComposeRecyclerView(
+fun <T> ComposeRecyclerView(
     modifier: Modifier = Modifier,
-    itemCount: Int,
-    itemBuilder: @Composable (index: Int) -> Unit,
+    items: List<T>,
+    itemBuilder: @Composable (item: T, index: Int) -> Unit,
     onScrollEnd: () -> Unit = {},
     orientation: LayoutOrientation = LayoutOrientation.Vertical,
     itemTypeBuilder: ComposeRecyclerViewAdapter.ItemTypeBuilder? = null,
@@ -69,8 +69,8 @@ fun ComposeRecyclerView(
     }
 
     val adapter = remember {
-        ComposeRecyclerViewAdapter().apply {
-            this.totalItems = itemCount
+        ComposeRecyclerViewAdapter<T>().apply {
+            this.itemList = items
             this.itemBuilder = itemBuilder
             itemTypeBuilder?.let {
                 this.itemTypeBuilder = itemTypeBuilder
@@ -119,7 +119,7 @@ fun ComposeRecyclerView(
                             target.bindingAdapterPosition,
                             fromType
                         )
-                        (recyclerView.adapter as ComposeRecyclerViewAdapter).onItemMove(
+                        (recyclerView.adapter as ComposeRecyclerViewAdapter<*>).onItemMove(
                             viewHolder.bindingAdapterPosition,
                             target.bindingAdapterPosition
                         )
@@ -183,7 +183,7 @@ fun ComposeRecyclerView(
         },
         modifier = modifier,
         update = {
-            adapter.update(itemCount, itemBuilder, orientation, itemTypeBuilder)
+            adapter.update(items, itemBuilder, orientation, itemTypeBuilder)
         }
     )
 

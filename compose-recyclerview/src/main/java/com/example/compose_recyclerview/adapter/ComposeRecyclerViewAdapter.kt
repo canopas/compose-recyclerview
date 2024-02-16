@@ -9,23 +9,22 @@ import com.example.compose_recyclerview.data.LayoutOrientation
 /**
  * RecyclerView adapter for handling dynamically generated Compose items.
  */
-class ComposeRecyclerViewAdapter :
-    RecyclerView.Adapter<ComposeRecyclerViewAdapter.ComposeRecyclerViewHolder>(){
+class ComposeRecyclerViewAdapter<T> :
+    RecyclerView.Adapter<ComposeRecyclerViewAdapter<T>.ComposeRecyclerViewHolder>() {
 
     interface ItemTypeBuilder {
         fun getItemType(position: Int): Int
     }
 
-    private var itemList: MutableList<Any> = mutableListOf()
-
-    var totalItems: Int = 0
+    var itemList: List<T> = mutableListOf()
         set(value) {
             if (field == value) return
+            val old = field
             field = value
-            notifyItemRangeChange(value)
+            notifyItemRangeChange(old)
         }
 
-    var itemBuilder: (@Composable (index: Int) -> Unit)? =
+    var itemBuilder: (@Composable (item: T, index: Int) -> Unit)? =
         null
 
     var itemTypeBuilder: ItemTypeBuilder? = null
@@ -50,12 +49,14 @@ class ComposeRecyclerViewAdapter :
         holder.composeView.apply {
             tag = holder
             setContent {
-                itemBuilder?.invoke(position)
+                if (position < itemList.size) {
+                    itemBuilder?.invoke(itemList[position], position)
+                }
             }
         }
     }
 
-    override fun getItemCount(): Int = totalItems
+    override fun getItemCount(): Int = itemList.size
 
     override fun getItemViewType(position: Int): Int {
         return itemTypeBuilder?.getItemType(position) ?: 0
@@ -66,12 +67,12 @@ class ComposeRecyclerViewAdapter :
     }
 
     fun update(
-        itemCount: Int,
-        itemBuilder: @Composable (index: Int) -> Unit,
+        items: List<T>,
+        itemBuilder: @Composable (item: T, index: Int) -> Unit,
         layoutOrientation: LayoutOrientation,
         itemTypeBuilder: ItemTypeBuilder?
     ) {
-        this.totalItems = itemCount
+        this.itemList = items
         this.itemBuilder = itemBuilder
         this.layoutOrientation = layoutOrientation
         itemTypeBuilder?.let {
@@ -79,14 +80,12 @@ class ComposeRecyclerViewAdapter :
         }
     }
 
-    private fun notifyItemRangeChange(newSize: Int) {
-        val oldSize = itemList.size
+    private fun notifyItemRangeChange(oldItems: List<T>) {
+        val oldSize = oldItems.size
+        val newSize = itemList.size
         if (newSize < oldSize) {
-            itemList = itemList.subList(0, newSize)
             notifyItemRangeRemoved(newSize, oldSize - newSize)
         } else if (newSize > oldSize) {
-            val list = MutableList(newSize - oldSize) { Any() }
-            itemList = (itemList + list).toMutableList()
             notifyItemRangeInserted(oldSize, newSize - oldSize)
         }
     }

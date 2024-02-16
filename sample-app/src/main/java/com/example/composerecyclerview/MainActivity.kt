@@ -71,10 +71,10 @@ class MainActivity : ComponentActivity() {
                         }
                         ComposeRecyclerView(
                             modifier = Modifier.fillMaxSize(),
-                            itemCount = userDataList.size,
-                            itemBuilder = { index ->
+                            items = userDataList,
+                            itemBuilder = { item, index ->
                                 Log.d("XXX", "Size: ${userDataList.size}\tIndex:$index")
-                                CustomUserItem(user = userDataList[index])
+                                CustomUserItem(user = item)
                             },
                             onItemMove = { fromPosition, toPosition, itemType ->
                                 // Update list when an item is moved
