@@ -29,7 +29,7 @@ import com.example.compose_recyclerview.utils.ItemTouchHelperConfig
  * Composable function to display a RecyclerView with dynamically generated Compose items.
  *
  * @param modifier The modifier to be applied to the RecyclerView.
- * @param itemCount The total number of items to be displayed in the RecyclerView.
+ * @param items The list of items to be displayed in the RecyclerView.
  * @param itemBuilder The lambda function responsible for creating the Compose content for each item at the specified index.
  * @param onScrollEnd Callback triggered when the user reaches the end of the list during scrolling.
  * @param orientation The layout direction of the RecyclerView.
@@ -76,6 +76,7 @@ fun <T> ComposeRecyclerView(
                 this.itemTypeBuilder = itemTypeBuilder
             }
             this.layoutOrientation = orientation
+            this.layoutManager = layoutManager
         }
     }
 

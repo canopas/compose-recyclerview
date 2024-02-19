@@ -3,8 +3,10 @@ package com.example.compose_recyclerview.adapter
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.compose_recyclerview.data.LayoutOrientation
+import kotlin.math.max
 
 /**
  * RecyclerView adapter for handling dynamically generated Compose items.
@@ -35,6 +37,8 @@ class ComposeRecyclerViewAdapter<T> :
             field = value
             notifyItemChanged(0)
         }
+
+    var layoutManager: LinearLayoutManager? = null
 
     inner class ComposeRecyclerViewHolder(val composeView: ComposeView) :
         RecyclerView.ViewHolder(composeView)
@@ -83,10 +87,13 @@ class ComposeRecyclerViewAdapter<T> :
     private fun notifyItemRangeChange(oldItems: List<T>) {
         val oldSize = oldItems.size
         val newSize = itemList.size
+        val firstVisibleIndex = layoutManager?.findFirstVisibleItemPosition() ?: 0
         if (newSize < oldSize) {
-            notifyItemRangeRemoved(newSize, oldSize - newSize)
+            val position = max(0, firstVisibleIndex)
+            notifyItemRangeRemoved(position, oldSize - newSize)
         } else if (newSize > oldSize) {
-            notifyItemRangeInserted(oldSize, newSize - oldSize)
+            val start = max(0, firstVisibleIndex)
+            notifyItemRangeInserted(start, newSize - oldSize)
         }
     }
 }
