@@ -1,3 +1,5 @@
+<p align="center"> <a href="https://canopas.com/contact"><img src="./cta/cta_banner.png"></a></p>
+
 # ComposeRecyclerView
 
 **ComposeRecyclerView** enables seamless integration of Jetpack Compose composables within traditional RecyclerView. 
@@ -340,6 +342,8 @@ the [Github Issues](https://github.com/canopas/compose-recyclerview/issues)
 **ComposeRecyclerView** is owned and maintained by the [Canopas team](https://canopas.com/).
 For project updates and releases, you can follow them on Twitter
 at [@canopassoftware](https://twitter.com/canopassoftware).
+
+<a href="https://canopas.com/contact"><img src="./cta/cta_btn.png" width=300></a>
 
 ## Acknowledgments
 
