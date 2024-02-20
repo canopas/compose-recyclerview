@@ -62,8 +62,8 @@ class MainActivity : ComponentActivity() {
 
                     ComposeRecyclerView(
                         modifier = Modifier.fillMaxSize(),
-                        itemCount = 1 + userDataList.size + 1 + otherUsersDataList.size,
-                        itemBuilder = { index ->
+                        items = listOf(1) + userDataList + listOf(1) + otherUsersDataList,
+                        itemBuilder = { item, index ->
                             if (index == 0) {
                                 Box(
                                     modifier = Modifier.fillMaxWidth(),

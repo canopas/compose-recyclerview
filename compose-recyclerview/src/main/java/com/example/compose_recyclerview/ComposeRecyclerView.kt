@@ -29,7 +29,7 @@ import com.example.compose_recyclerview.utils.ItemTouchHelperConfig
  * Composable function to display a RecyclerView with dynamically generated Compose items.
  *
  * @param modifier The modifier to be applied to the RecyclerView.
- * @param itemCount The total number of items to be displayed in the RecyclerView.
+ * @param items The list of items to be displayed in the RecyclerView.
  * @param itemBuilder The lambda function responsible for creating the Compose content for each item at the specified index.
  * @param onScrollEnd Callback triggered when the user reaches the end of the list during scrolling.
  * @param orientation The layout direction of the RecyclerView.
@@ -43,10 +43,10 @@ import com.example.compose_recyclerview.utils.ItemTouchHelperConfig
  * @param onCreate Callback to customize the RecyclerView after its creation.
  */
 @Composable
-fun ComposeRecyclerView(
+fun <T> ComposeRecyclerView(
     modifier: Modifier = Modifier,
-    itemCount: Int,
-    itemBuilder: @Composable (index: Int) -> Unit,
+    items: List<T>,
+    itemBuilder: @Composable (item: T, index: Int) -> Unit,
     onScrollEnd: () -> Unit = {},
     orientation: LayoutOrientation = LayoutOrientation.Vertical,
     itemTypeBuilder: ComposeRecyclerViewAdapter.ItemTypeBuilder? = null,
@@ -69,13 +69,14 @@ fun ComposeRecyclerView(
     }
 
     val adapter = remember {
-        ComposeRecyclerViewAdapter().apply {
-            this.totalItems = itemCount
+        ComposeRecyclerViewAdapter<T>().apply {
+            this.itemList = items
             this.itemBuilder = itemBuilder
             itemTypeBuilder?.let {
                 this.itemTypeBuilder = itemTypeBuilder
             }
             this.layoutOrientation = orientation
+            this.layoutManager = layoutManager
         }
     }
 
@@ -119,7 +120,7 @@ fun ComposeRecyclerView(
                             target.bindingAdapterPosition,
                             fromType
                         )
-                        (recyclerView.adapter as ComposeRecyclerViewAdapter).onItemMove(
+                        (recyclerView.adapter as ComposeRecyclerViewAdapter<*>).onItemMove(
                             viewHolder.bindingAdapterPosition,
                             target.bindingAdapterPosition
                         )
@@ -183,7 +184,7 @@ fun ComposeRecyclerView(
         },
         modifier = modifier,
         update = {
-            adapter.update(itemCount, itemBuilder, orientation, itemTypeBuilder)
+            adapter.update(items, itemBuilder, orientation, itemTypeBuilder)
         }
     )
 
