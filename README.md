@@ -1,11 +1,11 @@
-
 # ComposeRecyclerView
 
 **ComposeRecyclerView** enables seamless integration of Jetpack Compose composables within traditional RecyclerView. 
 This library addresses performance concerns and resolves issues commonly faced in Compose LazyList implementations. 
 It comes with built-in support for drag-and-drop functionality, making it a versatile solution for dynamic UIs.
 
-![Blue Pink Gradient Fashion Banner (1)](https://github.com/canopas/compose-recyclerview/assets/98312779/f94d451f-f3f7-4920-91b4-c9417ee97be9)
+![ComposeRecyclerView](https://github.com/canopas/compose-recyclerview/assets/98312779/5d34dce0-dc5d-44ee-86fe-e0540bdbe753)
+
 
 
 ## Benefits
@@ -40,7 +40,7 @@ Use the ComposeRecyclerView composable to create a RecyclerView with dynamically
 ```
 ComposeRecyclerView(
     modifier = Modifier.fillMaxSize(),
-    itemCount = yourTotalItemCount,
+    items = yourTotalItems, // Combination of lists in case of multiple items
     itemBuilder = { index ->
         // Compose content for each item at the specified index
         // Similar to Flutter's ListView.builder() widget
@@ -138,7 +138,7 @@ class MainActivity : ComponentActivity() {
 
                     ComposeRecyclerView(
                         modifier = Modifier.fillMaxSize(),
-                        itemCount = 1 + userDataList.size + 1 + otherUsersDataList.size,
+                        items = listOf(1) + userDataList + listOf(1) + otherUsersDataList,
                         itemBuilder = { index ->
                             if (index == 0) {
                                 Box(
