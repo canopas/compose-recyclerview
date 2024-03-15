@@ -26,7 +26,7 @@ It comes with built-in support for drag-and-drop functionality, making it a vers
 Add the dependency
 
 ```gradle
- implementation 'com.canopas:compose_recyclerview:1.0.2'
+ implementation 'com.canopas:compose_recyclerview:1.0.3'
 ```
 
 
