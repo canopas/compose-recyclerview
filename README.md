@@ -91,6 +91,8 @@ onDragCompleted = { position ->
 }
 ```
 
+**Note:** To enable drag-and-drop functionality, passing a non-null `itemTypeBuilder` is mandatory.
+
 **Customize Layout (Optional):**
 
 You can customize the layout of your RecyclerView as needed.
