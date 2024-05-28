@@ -23,7 +23,7 @@ It comes with built-in support for drag-and-drop functionality, making it a vers
 
 ## How to add in your project
 
-Add the dependency ([Lastest-Version](https://github.com/canopas/compose-recyclerview/releases/latest))
+Add the dependency ([Latest-Version](https://github.com/canopas/compose-recyclerview/releases/latest))
 
 ```gradle
  implementation 'com.canopas:compose_recyclerview:<latest-version>'
