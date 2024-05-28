@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
                     ComposeRecyclerView(
                         modifier = Modifier.fillMaxSize(),
                         items = listOf(1) + userDataList + listOf(1) + otherUsersDataList,
-                        itemBuilder = { item, index ->
+                        itemBuilder = { _, index ->
                             if (index == 0) {
                                 Box(
                                     modifier = Modifier.fillMaxWidth(),
@@ -137,6 +137,8 @@ class MainActivity : ComponentActivity() {
                             override fun getItemType(position: Int): Int {
                                 // Determine the item type based on the position
                                 // You can customize this logic based on your requirements
+                                // Required for effective drag and drop. Provide a non-null [ComposeRecyclerViewAdapter.ItemTypeBuilder]
+                                // when enabling drag and drop functionality.
                                 return when {
                                     position == 0 -> ITEM_TYPE_FIRST_HEADER // Header type
                                     position <= userDataList.size -> ITEM_TYPE_FIRST_LIST_ITEM // First list item type
