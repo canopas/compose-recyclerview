@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
  * @property getMovementFlags Callback for providing movement flags for drag and swipe behavior.
  * @property onSelectedChanged Callback for handling changes in the selection state of an item.
  * @property isLongPressDragEnabled Flag to enable or disable long press drag behavior.
+ * @property swipeDirs Swipe directions for items. If not provided, all directions are enabled by default.
+ * @property dragDirs Drag directions for items. If not provided, left or right directions are enabled by default.
  */
 class ItemTouchHelperConfig {
     var nonDraggableItemTypes: Set<Int> = emptySet()
@@ -62,6 +64,7 @@ class ItemTouchHelperConfig {
 
     /**
      * Flag to enable or disable long press drag behavior.
+     * Default is true.
      */
     var isLongPressDragEnabled: Boolean = true
 

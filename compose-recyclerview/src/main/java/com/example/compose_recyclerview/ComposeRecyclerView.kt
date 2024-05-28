@@ -36,6 +36,7 @@ import com.example.compose_recyclerview.utils.ItemTouchHelperConfig
  * @param itemTypeBuilder The optional lambda function to determine the type of each item.
  *  * Required for effective drag and drop. Provide a non-null [ComposeRecyclerViewAdapter.ItemTypeBuilder] when enabling drag and drop functionality.
  *  * Useful when dealing with multiple item types, ensuring proper handling and layout customization for each type.
+ *  * If not provided, the builder will be considered as null and drag-and-drop functionality will be disabled.
  * @param onDragCompleted Callback triggered when an item drag operation is completed.
  * @param itemTouchHelperConfig Configuration block for customizing the behavior of ItemTouchHelper.
  *  * Specify non-draggable item types, handle drag-and-drop and swipe actions, customize the appearance during drag, and more.
