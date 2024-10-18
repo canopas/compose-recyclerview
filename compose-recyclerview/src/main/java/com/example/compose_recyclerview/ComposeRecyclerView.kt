@@ -1,7 +1,9 @@
 package com.example.compose_recyclerview
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -96,6 +98,11 @@ fun <T> ComposeRecyclerView(
 
     val config = remember {
         ItemTouchHelperConfig().apply { itemTouchHelperConfig?.invoke(this) }
+    }
+
+    // To disable drag and drop when itemTypeBuilder is null
+    LaunchedEffect(itemTypeBuilder) {
+        config.isLongPressDragEnabled = itemTypeBuilder != null
     }
 
     val itemTouchHelper = remember {
