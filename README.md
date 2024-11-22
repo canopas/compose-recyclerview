@@ -343,7 +343,7 @@ the [Github Issues](https://github.com/canopas/compose-recyclerview/issues)
 
 **ComposeRecyclerView** is owned and maintained by the [Canopas team](https://canopas.com/).
 For project updates and releases, you can follow them on Twitter
-at [@canopassoftware](https://twitter.com/canopassoftware).
+at [@canopas_eng](https://x.com/canopas_eng).
 
 <a href="https://canopas.com/contact"><img src="./cta/cta_btn.png" width=300></a>
 
